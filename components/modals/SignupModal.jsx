@@ -14,6 +14,7 @@ import { auth } from "@/firebase";
 import { useEffect, useState } from "react";
 import { setUser } from "@/redux/userSlice";
 import { useRouter } from "next/router";
+import { HandleGuest } from "./HandleGuest";
 
 function SignupModal() {
   const isOpen = useSelector((state) => state.modals.signupModalOpen);
@@ -77,7 +78,12 @@ function SignupModal() {
         className="flex items-center justify-center"
       >
         <div className="flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
-          <button className="w-full rounded-md bg-white py-2 text-lg font-bold text-black">
+          <button
+            className="w-full rounded-md bg-white py-2 text-lg font-bold text-black"
+            onClick={() => {
+              HandleGuest();
+            }}
+          >
             Sign In as a Guest
           </button>
           <span className="font-bold">or</span>

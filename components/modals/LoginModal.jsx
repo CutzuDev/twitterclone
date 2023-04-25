@@ -39,7 +39,12 @@ function LoginModal() {
         className="flex items-center justify-center"
       >
         <div className="flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
-          <span className="mb-2 w-full text-left text-4xl font-bold">
+          <span
+            className="mb-2 w-full text-left text-4xl font-bold"
+            onClick={() => {
+              HandleGuest();
+            }}
+          >
             Sign in to your account
           </span>
           <form className=" flex w-full flex-col gap-7" onSubmit={handleLogin}>

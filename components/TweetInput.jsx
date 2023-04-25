@@ -1,3 +1,4 @@
+import { db } from "@/firebase";
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -5,6 +6,7 @@ import {
   MapPinIcon,
   PhotoIcon,
 } from "@heroicons/react/24/outline";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -37,6 +39,20 @@ function TweetInput() {
       settweetButton("opacity-50 hover:cursor-default");
     }
   }, [counter]);
+
+  async function sendTweet() {
+    if (user.email !== null && text.length !== 0) {
+      const docRef = await addDoc(collection(db, "posts"), {
+        username: user.name,
+        photoUrl: user.photoUrl,
+        uid: user.uid,
+        timestamp: serverTimestamp(),
+        likes: [],
+        content: text,
+      });
+    }
+    setText("")
+  }
 
   return (
     <div className="flex w-full border-y border-gray-400 border-opacity-25">
@@ -93,6 +109,9 @@ function TweetInput() {
           </ul>
           <button
             className={`w-fit rounded-full bg-[#1d9bf0] px-5 py-2 font-bold ${tweetButton}`}
+            onClick={() => {
+              sendTweet();
+            }}
           >
             Tweet
           </button>

@@ -43,6 +43,7 @@ function CommentModal() {
                 {/* <Moment fromNow className="text-neutral-500">
                   timestamp
                 </Moment> */}
+                {/*  */}
               </div>
               <span>text</span>
             </div>

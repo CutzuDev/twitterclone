@@ -43,7 +43,8 @@ function TweetInput() {
   async function sendTweet() {
     if (user.email !== null && text.length !== 0) {
       const docRef = await addDoc(collection(db, "posts"), {
-        username: user.name,
+        username: user.username,
+        name: user.name,
         photoUrl: user.photoUrl,
         uid: user.uid,
         timestamp: serverTimestamp(),
@@ -51,7 +52,7 @@ function TweetInput() {
         content: text,
       });
     }
-    setText("")
+    setText("");
   }
 
   return (

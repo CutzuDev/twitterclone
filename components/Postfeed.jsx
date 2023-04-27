@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TweetInput from "./TweetInput";
 import Tweet from "./Tweet";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
 
 function Postfeed() {
   const selected = "font-bold before:inline text-white";
@@ -10,6 +12,16 @@ function Postfeed() {
     button1: selected,
     button2: unselected,
   });
+
+  const [tweets, settweets] = useState([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      settweets(snapshot.docs);
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">
@@ -42,19 +54,9 @@ function Postfeed() {
         <TweetInput />
       </div>
       <div className="flex w-full flex-col">
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
-        <Tweet />
+        {tweets.map((tweet, index) => (
+          <Tweet key={index} data={tweet.data()} />
+        ))}
       </div>
     </div>
   );

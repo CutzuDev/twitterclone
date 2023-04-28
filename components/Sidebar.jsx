@@ -15,7 +15,7 @@ import UserSection from "./UserSection";
 function Sidebar() {
 
   return (
-    <div className="hidden h-screen w-full flex-col items-center justify-between px-2 py-1 sm:flex ">
+    <div className="hidden h-screen w-full flex-col items-center justify-between px-2 py-1 sm:flex max-w-[300px]">
       <div className="flex w-full flex-col items-center justify-center gap-4 p-2 xl:pr-8">
         <Link
           href={"/"}

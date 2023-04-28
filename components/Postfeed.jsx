@@ -51,7 +51,9 @@ function Postfeed() {
             Following
           </button>
         </div>
-        <TweetInput />
+        <div className="border-y border-gray-400 border-opacity-25">
+          <TweetInput />
+        </div>
       </div>
       <div className="flex w-full flex-col">
         {tweets.map((tweet, index) => (

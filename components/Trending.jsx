@@ -47,7 +47,7 @@ function Trending() {
   ];
 
   return (
-    <div className=" ml-8 hidden min-h-screen flex-col items-center justify-start gap-3 py-3 lg:flex lg:w-full lg:max-w-[350px]">
+    <div className="hidden min-h-screen flex-col items-center justify-start gap-3 py-3 pl-8 lg:flex lg:w-full lg:max-w-[350px]">
       <div className="focus-within: group flex w-full items-center justify-center gap-2 rounded-full border-blue-400 bg-gray-400 bg-opacity-[24%] px-4 py-2 focus-within:border focus-within:bg-transparent ">
         <MagnifyingGlassIcon className="h-6 text-gray-400 text-opacity-50" />
         <input

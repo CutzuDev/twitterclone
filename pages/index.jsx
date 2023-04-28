@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
-      <div className="sticky top-0 xl:w-full xl:max-w-[300px]">
+      <div className="sticky top-0 xl:w-full xl:max-w-[350px] flex items-start justify-end">
         <Sidebar />
       </div>
       <Postfeed />

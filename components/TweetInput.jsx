@@ -11,7 +11,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-function TweetInput() {
+function TweetInput({ comment }) {
   const user = useSelector((state) => state.user);
 
   const [text, setText] = useState("");
@@ -56,8 +56,12 @@ function TweetInput() {
   }
 
   return (
-    <div className="flex w-full border-y border-gray-400 border-opacity-25">
-      <div className="flex flex-col items-center justify-start p-3">
+    <div className="flex w-full ">
+      <div
+        className={`flex flex-col items-center justify-start ${
+          comment ? "p-0" : "p-3"
+        }`}
+      >
         <Image
           src={user.photoUrl || "/assets/cutzu.gif"}
           draggable="false"
@@ -67,7 +71,9 @@ function TweetInput() {
           alt=""
         />
       </div>
-      <div className="flex flex-1 flex-col p-3">
+      <div
+        className={`flex flex-1 flex-col ${comment ? "p-3 pt-0" : "p-3 pt-3"}`}
+      >
         <div className="relative mb-2 w-full">
           <textarea
             className="w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 text-lg font-medium placeholder-gray-400 focus:outline-none"

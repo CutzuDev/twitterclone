@@ -11,10 +11,20 @@ import { Modal } from "@mui/material";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase";
+import Moment from "react-moment";
 
 function CommentModal() {
+  const tweetDetails = useSelector((state) => state.modals.commentTweetDetails);
+
   const user = useSelector((state) => state.user);
   const isOpen = useSelector((state) => state.modals.commentModalOpen);
   const dispatch = useDispatch();
@@ -45,16 +55,17 @@ function CommentModal() {
     }
   }, [counter]);
 
-  async function sendTweet() {
+  async function sendComment() {
     if (user.email !== null && text.length !== 0) {
-      const docRef = await addDoc(collection(db, "posts"), {
+      const docRef = doc(db, "posts", tweetDetails.id);
+      const commentDetails = {
         username: user.username,
         name: user.name,
         photoUrl: user.photoUrl,
-        uid: user.uid,
-        timestamp: serverTimestamp(),
-        likes: [],
-        content: text,
+        comment: text,
+      };
+      await updateDoc(docRef, {
+        comments: arrayUnion(commentDetails),
       });
     }
     setText("");
@@ -68,12 +79,15 @@ function CommentModal() {
       >
         <div className="flex w-4/5 flex-col items-center justify-center rounded-lg border border-gray-400 border-opacity-25 bg-black p-4 text-white outline-none md:w-[575px]">
           <div className="flex w-full items-center justify-start">
-            <XMarkIcon className="h-5 " />
+            <XMarkIcon
+              className="h-5 hover:cursor-pointer"
+              onClick={() => dispatch(closeCommentModal())}
+            />
           </div>
           <div className="mt-4 flex w-full">
             <div className="flex flex-col items-center justify-start">
               <Image
-                src={"/assets/cutzu.gif"}
+                src={tweetDetails.photoUrl || "/assets/cutzu.gif"}
                 draggable="false"
                 width={46}
                 height={46}
@@ -84,26 +98,23 @@ function CommentModal() {
             </div>
             <div className="flex flex-1 flex-col px-3">
               <div className="flex items-center justify-start gap-1">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="font-bold">Name</span>
-                  <span className=" text-gray-400 text-opacity-50 ">
-                    @username
+                <div className="flex items-center justify-center gap-2 hover:cursor-pointer">
+                  <span className="font-bold">{tweetDetails.username}</span>
+                  <span className=" text-gray-400 text-opacity-50 hover:cursor-pointer">
+                    @{tweetDetails.name}
                   </span>
                 </div>
                 <div className="h-[3px] w-[3px] rounded-full bg-neutral-500"></div>
-                2 hours ago
-                {/* <Moment fromNow className="text-neutral-500">
-                  timestamp
-                </Moment> */}
-                {/*  */}
+                <Moment fromNow className="text-neutral-500">
+                  {tweetDetails.timestamp}
+                </Moment>
               </div>
-              <span>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat
-                possimus suscipit rem culpa impedit fugit id deserunt in
-                voluptates.
-              </span>
+              <span>{tweetDetails.content}</span>
               <div className="my-3 text-gray-400 text-opacity-50">
-                Replying to <span className="text-blue-400">@username</span>
+                Replying to{" "}
+                <span className="text-blue-400 hover:cursor-pointer">
+                  @{tweetDetails.name}
+                </span>
               </div>
             </div>
           </div>
@@ -165,7 +176,7 @@ function CommentModal() {
                 <button
                   className={`w-fit rounded-full bg-[#1d9bf0] px-5 py-2 font-bold ${tweetButton}`}
                   onClick={() => {
-                    sendTweet();
+                    sendComment();
                   }}
                 >
                   Tweet

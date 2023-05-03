@@ -21,11 +21,6 @@ function Trending() {
       topic: "Doge",
       tweets: "69k",
     },
-    {
-      title: "Fun",
-      topic: "Doge",
-      tweets: "69k",
-    },
   ];
 
   const followList = [
@@ -83,7 +78,7 @@ function Trending() {
         />
       </div>
       <div className="flex w-full flex-col items-center justify-start rounded-2xl bg-slate-400 bg-opacity-[17%]">
-        <span className="mb-1 w-full px-4 py-2 text-left text-xl font-bold">
+        <span className="mb-1 w-full px-4  py-2 text-left text-xl font-bold">
           Trends for you
         </span>
         <ul className="flex w-full flex-1 flex-col">

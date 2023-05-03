@@ -57,7 +57,7 @@ function Postfeed() {
       </div>
       <div className="flex w-full flex-col">
         {tweets.map((tweet, index) => (
-          <Tweet key={index} data={tweet.data()} />
+          <Tweet key={index} id={tweet.id} data={tweet.data()} />
         ))}
       </div>
     </div>

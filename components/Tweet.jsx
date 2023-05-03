@@ -1,4 +1,4 @@
-import { openCommentModal } from "@/redux/modalSlice";
+import { openCommentModal, setTweetDetails } from "@/redux/modalSlice";
 import {
   ArrowPathRoundedSquareIcon,
   ArrowUpTrayIcon,
@@ -8,9 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Moment from "react-moment";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function Tweet({ data }) {
+export default function Tweet({ data, id }) {
   const dispatch = useDispatch();
   return (
     <div className="flex flex-col border-b border-gray-400 border-opacity-25 transition-all duration-100 hover:bg-gray-400 hover:bg-opacity-5">
@@ -24,7 +24,29 @@ export default function Tweet({ data }) {
       <div className="flex gap-5 p-3 pl-[74px] text-neutral-500 sm:gap-6 md:gap-8 xl:gap-10">
         <div className="flex items-center justify-center gap-1">
           <div
-            onClick={() => dispatch(openCommentModal())}
+            onClick={() => {
+              dispatch(
+                setTweetDetails({
+                  id: id,
+                  content: data?.content,
+                  photoUrl: data?.photoUrl,
+                  name: data?.name,
+                  username: data?.username,
+                  timestamp: data?.timestamp?.toDate()
+                })
+              );
+
+              console.log({
+                id: id,
+                content: data?.content,
+                photoUrl: data?.photoUrl,
+                name: data?.name,
+                username: data?.username,
+                timestamp: data?.timestamp?.toDate()
+              })
+
+              dispatch(openCommentModal());
+            }}
             className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500"
           >
             <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />

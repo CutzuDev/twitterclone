@@ -69,6 +69,7 @@ function CommentModal() {
       });
     }
     setText("");
+    dispatch(closeCommentModal());
   }
   return (
     <>

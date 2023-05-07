@@ -49,6 +49,7 @@ function TweetInput() {
         uid: user.uid,
         timestamp: serverTimestamp(),
         likes: [],
+        retweets: [],
         content: text,
       });
     }
@@ -57,7 +58,7 @@ function TweetInput() {
 
   return (
     <div className="flex w-full ">
-      <div className={`flex flex-col items-center justify-start p-3`}>
+      <div className={`hidden flex-col items-center justify-start p-3 sm:flex`}>
         <Image
           src={user.photoUrl || "/assets/cutzu.gif"}
           draggable="false"
@@ -67,7 +68,7 @@ function TweetInput() {
           alt=""
         />
       </div>
-      <div className={`flex flex-1 flex-col p-3 pt-3`}>
+      <div className={`flex flex-1 flex-col p-3`}>
         <div className="relative mb-2 w-full">
           <textarea
             className="w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 text-lg font-medium placeholder-gray-400 focus:outline-none"

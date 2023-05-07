@@ -8,6 +8,7 @@ import { Modal } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { HandleGuest } from "./HandleGuest";
 
 function LoginModal() {
   const isOpen = useSelector((state) => state.modals.loginModalOpen);
@@ -39,12 +40,7 @@ function LoginModal() {
         className="flex items-center justify-center"
       >
         <div className="flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
-          <span
-            className="mb-2 w-full text-left text-4xl font-bold"
-            onClick={() => {
-              HandleGuest();
-            }}
-          >
+          <span className="mb-2 w-full text-left text-4xl font-bold">
             Sign in to your account
           </span>
           <form className=" flex w-full flex-col gap-7" onSubmit={handleLogin}>
@@ -70,7 +66,12 @@ function LoginModal() {
             </button>
           </form>
           <span className="font-bold">or</span>
-          <button className="w-full rounded-md bg-white py-2 text-lg font-bold text-black">
+          <button
+            className="w-full rounded-md bg-white py-2 text-lg font-bold text-black"
+            onClick={() => {
+              HandleGuest();
+            }}
+          >
             Sign In as a Guest
           </button>
         </div>

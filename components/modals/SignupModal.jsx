@@ -66,7 +66,7 @@ function SignupModal() {
   return (
     <>
       <button
-        className="rounded-full border bg-white px-14 py-2 text-black"
+        className="rounded-full border bg-white px-10 sm:px-14 py-2 text-black"
         onClick={() => dispatch(openSignupModal())}
       >
         Sign Up
@@ -86,7 +86,7 @@ function SignupModal() {
             Sign In as a Guest
           </button>
           <span className="font-bold">or</span>
-          <span className="mb-2 w-full text-left text-4xl font-bold">
+          <span className="mb-2 w-full text-left text-2xl sm:text-4xl font-bold">
             Create your account
           </span>
           <form className="flex w-full flex-col gap-7" onSubmit={handleSignUp}>

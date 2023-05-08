@@ -12,11 +12,8 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import {
-  addDoc,
   arrayUnion,
-  collection,
   doc,
-  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -78,7 +75,7 @@ function CommentModal() {
         open={isOpen}
         onClose={() => dispatch(closeCommentModal())}
       >
-        <div className="flex w-4/5 flex-col items-center justify-center rounded-lg border border-gray-400 border-opacity-25 bg-black p-4 text-white outline-none md:w-[575px]">
+        <div className="flex w-[90%] flex-col items-center justify-center rounded-lg border border-gray-400 border-opacity-25 bg-black p-4 text-white outline-none md:w-[575px]">
           <div className="flex w-full items-center justify-start">
             <XMarkIcon
               className="h-5 hover:cursor-pointer"
@@ -105,8 +102,8 @@ function CommentModal() {
                     @{tweetDetails.name}
                   </span>
                 </div>
-                <div className="h-[3px] w-[3px] rounded-full bg-neutral-500"></div>
-                <Moment fromNow className="text-neutral-500">
+                <div className="hidden h-[3px] w-[3px] rounded-full bg-neutral-500 sm:inline"></div>
+                <Moment fromNow className="hidden text-neutral-500 sm:inline">
                   {tweetDetails.timestamp}
                 </Moment>
               </div>
@@ -122,8 +119,12 @@ function CommentModal() {
 
           {/* TEST */}
 
-          <div className="flex w-full ">
-            <div className={"flex flex-col items-center justify-start p-0 "}>
+          <div className="flex w-full flex-col sm:flex-row sm:items-start items-start">
+            <div
+              className={
+                "flex min-w-fit flex-col items-center justify-start p-0 mb-4"
+              }
+            >
               <Image
                 src={user.photoUrl || "/assets/cutzu.gif"}
                 draggable="false"
@@ -133,16 +134,16 @@ function CommentModal() {
                 alt=""
               />
             </div>
-            <div className={"flex flex-1 flex-col p-3 pt-0 "}>
+            <div className="flex flex-1 flex-col pt-0 sm:p-3">
               <div className="relative mb-2 w-full">
                 <textarea
-                  className="w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 text-lg font-medium placeholder-gray-400 focus:outline-none"
+                  className=" w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 text-lg font-medium placeholder-gray-400 focus:outline-none"
                   placeholder="What's happening?"
                   maxLength={300}
                   value={text}
                   onChange={handleChange}
                 ></textarea>
-                <div className="absolute bottom-2 right-0 select-none text-neutral-500 text-opacity-75">
+                <div className="absolute bottom-2 right-0 w-fit select-none text-neutral-500 text-opacity-75">
                   {counter}/300
                 </div>
               </div>

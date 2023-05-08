@@ -2,18 +2,32 @@ import { useState, useEffect } from "react";
 import TweetInput from "./TweetInput";
 import Tweet from "./Tweet";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "@/firebase";
+import { auth, db } from "@/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { hideBanner, showBanner } from "@/redux/modalSlice";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
+import { setUser } from "@/redux/userSlice";
 
 function Postfeed() {
   const selected = "font-bold before:inline text-white";
   const unselected = "before:hidden font-semibold text-neutral-500";
+
+  const bannerState = useSelector((state) => state.modals.bannerState);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const [tweets, settweets] = useState([]);
 
   const [styling, setstyling] = useState({
     button1: selected,
     button2: unselected,
   });
 
-  const [tweets, settweets] = useState([]);
+  function handleSignOut() {
+    signOut(auth);
+    unsubscribe();
+    dispatch(hideBanner());
+  }
 
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
@@ -23,10 +37,37 @@ function Postfeed() {
     return unsubscribe;
   }, []);
 
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) return;
+    dispatch(
+      setUser({
+        username: null,
+        name: null,
+        email: null,
+        uid: null,
+        photoUrl: null,
+      })
+    );
+    return unsubscribe;
+  });
+
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">
       <div className="flex w-full flex-col">
-        <div className="select-none p-3 text-xl font-bold">Home</div>
+        <div className="relative select-none p-3 text-xl font-bold">
+          Home
+          {!bannerState && (
+            <div
+              onClick={() => {
+                handleSignOut();
+              }}
+              className="absolute right-2 top-2 rounded-full border border-neutral-500 border-opacity-0 p-[6px] text-neutral-200 transition-all duration-300 hover:border-red-500 hover:border-opacity-100 hover:text-red-500 sm:hidden"
+            >
+              <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+            </div>
+          )}
+        </div>
         <div className="flex justify-between">
           <button
             onClick={() => {

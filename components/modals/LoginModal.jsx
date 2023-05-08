@@ -28,7 +28,7 @@ function LoginModal() {
   return (
     <>
       <button
-        className="rounded-full border px-14 py-2"
+        className="rounded-full border px-10 sm:px-14 py-2"
         onClick={() => dispatch(openLoginModal())}
       >
         Log In
@@ -40,7 +40,7 @@ function LoginModal() {
         className="flex items-center justify-center"
       >
         <div className="flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
-          <span className="mb-2 w-full text-left text-4xl font-bold">
+          <span className="mb-2 w-full text-left text-2xl sm:text-4xl font-bold">
             Sign in to your account
           </span>
           <form className=" flex w-full flex-col gap-7" onSubmit={handleLogin}>

@@ -1,4 +1,5 @@
 import { db, storage } from "@/firebase";
+import { openLoginModal } from "@/redux/modalSlice";
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -17,10 +18,12 @@ import {
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function TweetInput() {
   const user = useSelector((state) => state.user);
+
+  const dispatch = useDispatch();
 
   const [image, setImage] = useState(null);
 
@@ -75,10 +78,10 @@ function TweetInput() {
           image: downloadURL,
         });
       }
+      setText("");
+      setImage(null);
     }
-
-    setText("");
-    setImage(null);
+    dispatch(openLoginModal());
   }
 
   function addImagetoTweet(e) {

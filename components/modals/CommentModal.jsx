@@ -125,7 +125,6 @@ function CommentModal() {
             </div>
           </div>
 
-          {/* TEST */}
 
           <div className="flex w-full flex-col items-start sm:flex-row sm:items-start">
             <div
@@ -194,7 +193,6 @@ function CommentModal() {
               </div>
             </div>
           </div>
-          {/* TEST */}
         </div>
       </Modal>
     </>

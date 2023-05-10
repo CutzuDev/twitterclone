@@ -149,7 +149,6 @@ export default function CommentsPage() {
             />
           )}
         </div>
-        {/*  */}
         <div className="flex w-full px-4">
           <div className="flex w-full items-center justify-around border-y border-gray-400 border-opacity-25 px-3 py-1 text-neutral-500 ">
             <div
@@ -227,7 +226,6 @@ export default function CommentsPage() {
             </div>
           </div>
         </div>
-        {/*  */}
 
         <div
           onClick={() => replyFunctionShare.current.click()}
@@ -250,7 +248,6 @@ export default function CommentsPage() {
             Reply
           </button>
         </div>
-        {/*  */}
 
         {comments
           ? comments.map((fetchedCommentData, index) => (
@@ -262,7 +259,6 @@ export default function CommentsPage() {
               />
             ))
           : null}
-        {/*  */}
       </div>
 
       <div className="sticky top-0">

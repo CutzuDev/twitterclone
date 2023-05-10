@@ -11,15 +11,13 @@ import { Modal } from "@mui/material";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import {
-  arrayUnion,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import Moment from "react-moment";
+import { useRouter } from "next/router";
 
 function CommentModal() {
+  const router = useRouter();
   const tweetDetails = useSelector((state) => state.modals.commentTweetDetails);
 
   const user = useSelector((state) => state.user);
@@ -67,7 +65,9 @@ function CommentModal() {
     }
     setText("");
     dispatch(closeCommentModal());
+    if (!tweetDetails.main) [router.reload()];
   }
+
   return (
     <>
       <Modal
@@ -75,7 +75,7 @@ function CommentModal() {
         open={isOpen}
         onClose={() => dispatch(closeCommentModal())}
       >
-        <div className="flex w-[90%] flex-col items-center justify-center rounded-lg border border-gray-400 border-opacity-25 bg-black p-4 text-white outline-none md:w-[575px]">
+        <div className="flex w-[90%] flex-col items-center justify-center rounded-lg border border-gray-400 border-opacity-25 bg-black p-3 text-white outline-none sm:p-4 md:w-[575px]">
           <div className="flex w-full items-center justify-start">
             <XMarkIcon
               className="h-5 hover:cursor-pointer"
@@ -107,7 +107,15 @@ function CommentModal() {
                   {tweetDetails.timestamp}
                 </Moment>
               </div>
-              <span>{tweetDetails.content}</span>
+              <div className="flex w-full flex-col">
+                <span>{tweetDetails.content}</span>
+                {tweetDetails.image && (
+                  <img
+                    src={tweetDetails.image}
+                    className="mt-4 max-w-[75%] select-none rounded-2xl"
+                  />
+                )}
+              </div>
               <div className="my-3 text-gray-400 text-opacity-50">
                 Replying to{" "}
                 <span className="text-blue-400 hover:cursor-pointer">
@@ -119,10 +127,10 @@ function CommentModal() {
 
           {/* TEST */}
 
-          <div className="flex w-full flex-col sm:flex-row sm:items-start items-start">
+          <div className="flex w-full flex-col items-start sm:flex-row sm:items-start">
             <div
               className={
-                "flex min-w-fit flex-col items-center justify-start p-0 mb-4"
+                "mb-4 flex min-w-fit flex-col items-center justify-start p-0"
               }
             >
               <Image
@@ -134,17 +142,17 @@ function CommentModal() {
                 alt=""
               />
             </div>
-            <div className="flex flex-1 flex-col pt-0 sm:p-3">
+            <div className="flex w-full flex-1 flex-col pt-0 sm:p-3">
               <div className="relative mb-2 w-full">
                 <textarea
-                  className=" w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 text-lg font-medium placeholder-gray-400 focus:outline-none"
+                  className=" w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8  font-medium placeholder-gray-400 focus:outline-none sm:text-lg"
                   placeholder="What's happening?"
-                  maxLength={300}
+                  maxLength={100}
                   value={text}
                   onChange={handleChange}
                 ></textarea>
                 <div className="absolute bottom-2 right-0 w-fit select-none text-neutral-500 text-opacity-75">
-                  {counter}/300
+                  {counter}/100
                 </div>
               </div>
               <div className="flex w-full items-center justify-between px-1">
@@ -152,31 +160,31 @@ function CommentModal() {
                   <li
                     className={`flex items-center justify-center rounded-full ${styleIcons}`}
                   >
-                    <PhotoIcon className="h-5 w-5 text-blue-400" />
+                    <PhotoIcon className=" h-4 w-4  text-blue-400 sm:h-5 sm:w-5" />
                   </li>
                   <li
                     className={`flex items-center justify-center rounded-full ${styleIcons}`}
                   >
-                    <ChartBarIcon className="h-5 w-5 text-blue-400" />
+                    <ChartBarIcon className=" h-4 w-4  text-blue-400 sm:h-5 sm:w-5" />
                   </li>
                   <li
                     className={`flex items-center justify-center rounded-full ${styleIcons}`}
                   >
-                    <FaceSmileIcon className="h-5 w-5 text-blue-400" />
+                    <FaceSmileIcon className=" h-4 w-4  text-blue-400 sm:h-5 sm:w-5" />
                   </li>
                   <li
                     className={`flex items-center justify-center rounded-full ${styleIcons}`}
                   >
-                    <CalendarIcon className="h-5 w-5 text-blue-400" />
+                    <CalendarIcon className=" h-4 w-4  text-blue-400 sm:h-5 sm:w-5" />
                   </li>
                   <li
                     className={`flex items-center justify-center rounded-full ${styleIcons}`}
                   >
-                    <MapPinIcon className="h-5 w-5 text-blue-400" />
+                    <MapPinIcon className=" h-4 w-4  text-blue-400 sm:h-5 sm:w-5" />
                   </li>
                 </ul>
                 <button
-                  className={`w-fit rounded-full bg-[#1d9bf0] px-5 py-2 font-bold ${tweetButton}`}
+                  className={`w-fit rounded-full bg-[#1d9bf0] px-3 py-1 font-bold sm:px-5 sm:py-2 ${tweetButton}`}
                   onClick={() => {
                     sendComment();
                   }}

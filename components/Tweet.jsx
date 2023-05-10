@@ -54,8 +54,7 @@ export default function Tweet({ data, id }) {
     }
   }
   async function retweetComment() {
-    console.log("ran")
-    
+
     if (!user.email) {
       dispatch(openLoginModal());
       return;
@@ -83,6 +82,7 @@ export default function Tweet({ data, id }) {
         text={data?.content}
         photo={data?.photoUrl}
         uid={data?.uid}
+        image={data?.image}
         tweetId={id}
       />
       <div className="flex gap-5 p-3 text-neutral-500 sm:gap-6 sm:pl-[74px] md:gap-8 xl:gap-10">
@@ -98,6 +98,8 @@ export default function Tweet({ data, id }) {
                   name: data?.name,
                   username: data?.username,
                   timestamp: data?.timestamp?.toDate(),
+                  image: data?.image,
+                  main: true,
                 })
               );
               dispatch(openCommentModal());
@@ -122,12 +124,9 @@ export default function Tweet({ data, id }) {
                 : "text-neutral-500"
             } hover:bg-green-400 hover:bg-opacity-10 hover:text-green-400`}
           >
-            <ArrowPathRoundedSquareIcon
-              className="h-5 w-5"
-            />
+            <ArrowPathRoundedSquareIcon className="h-5 w-5" />
           </div>
           <span className="hover:cursor-default">
-            
             {data.retweets?.length ? data.retweets?.length : "0"}
           </span>
         </div>
@@ -176,6 +175,7 @@ export function TweetHeader({
   photo,
   uid,
   tweetId,
+  image,
 }) {
   const user = useSelector((state) => state.user);
 
@@ -227,7 +227,16 @@ export function TweetHeader({
             />
           ) : null}
         </div>
-        <span className="break-all">{text}</span>
+        <div className="flex w-full flex-col">
+          <span className="break-all">{text}</span>
+          {image && (
+            <img
+              src={image}
+              className="mt-4 max-w-[75%] select-none rounded-2xl"
+              alt=""
+            />
+          )}
+        </div>
       </div>
     </div>
   );

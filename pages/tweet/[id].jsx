@@ -3,7 +3,12 @@ import Sidebar from "@/components/Sidebar";
 import Trending from "@/components/Trending";
 import CommentModal from "@/components/modals/CommentModal";
 import { db } from "@/firebase";
-import { hideBanner, showBanner } from "@/redux/modalSlice";
+import {
+  hideBanner,
+  openCommentModal,
+  setTweetDetails,
+  showBanner,
+} from "@/redux/modalSlice";
 import {
   ArrowPathRoundedSquareIcon,
   ArrowSmallLeftIcon,
@@ -14,39 +19,83 @@ import {
   HeartIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { HeartIcon as FilledHeartIcon } from "@heroicons/react/24/solid";
 
 export default function CommentsPage() {
   const dispatch = useDispatch();
   const bannerState = useSelector((state) => state.modals.bannerState);
   const user = useSelector((state) => state.user);
+  const router = useRouter();
+  const id = router.query.id;
+  const [comments, setcomments] = useState([]);
+  const [tweetData, settweetData] = useState([]);
+  const replyFunctionShare = useRef(null);
+
   useEffect(() => {
     user.email !== null ? dispatch(hideBanner()) : dispatch(showBanner());
   }, [user]);
 
-  const router = useRouter();
-  const id = router.query.id;
-
-  const [comments, setcomments] = useState([]);
-  const [tweetData, settweetData] = useState([]);
-
   useEffect(() => {
-    async function fetchData() {
-      const docRef = doc(db, "posts", id);
-      const docFetch = await getDoc(docRef);
-      const docData = docFetch.data();
-      settweetData(docData);
-      setcomments(docData?.comments);
-    }
     if (id) {
       fetchData();
     }
   }, [id]);
+
+  async function likeComment() {
+    if (!user.email) {
+      dispatch(openLoginModal());
+      return;
+    }
+
+    if (tweetData?.likes?.includes(user.uid)) {
+      await updateDoc(doc(db, "posts", id), {
+        likes: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(doc(db, "posts", id), {
+        likes: arrayUnion(user.uid),
+      });
+    }
+    fetchData();
+  }
+
+  async function retweetComment() {
+    if (!user.email) {
+      dispatch(openLoginModal());
+      return;
+    }
+
+    if (tweetData?.retweets?.includes(user.uid)) {
+      await updateDoc(doc(db, "posts", id), {
+        retweets: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(doc(db, "posts", id), {
+        retweets: arrayUnion(user.uid),
+      });
+    }
+    fetchData();
+  }
+
+  async function fetchData() {
+    const docRef = doc(db, "posts", id);
+    const docFetch = await getDoc(docRef);
+    const docData = docFetch.data();
+    settweetData(docData);
+    setcomments(docData?.comments);
+  }
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
@@ -89,19 +138,84 @@ export default function CommentsPage() {
             </div>
           </div>
         </div>
-        <span className="w-full p-4 pt-0 text-lg">{tweetData?.content}</span>
+
+        <div className="flex w-full flex-col p-4 pt-0">
+          <span className="w-full text-lg">{tweetData?.content}</span>
+          {tweetData?.image && (
+            <img
+              src={tweetData?.image}
+              className="mt-4 max-w-[75%] select-none rounded-2xl"
+              alt=""
+            />
+          )}
+        </div>
         {/*  */}
         <div className="flex w-full px-4">
           <div className="flex w-full items-center justify-around border-y border-gray-400 border-opacity-25 px-3 py-1 text-neutral-500 ">
-            <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
-              <ChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 " />
+            <div
+              ref={replyFunctionShare}
+              onClick={() => {
+                dispatch(
+                  setTweetDetails({
+                    id: id,
+                    content: tweetData?.content,
+                    photoUrl: tweetData?.photoUrl,
+                    name: tweetData?.name,
+                    username: tweetData?.username,
+                    image: tweetData?.image,
+                    timestamp: tweetData?.timestamp?.toDate(),
+                    main: false,
+                  })
+                );
+                dispatch(openCommentModal());
+              }}
+              className="flex items-center justify-center gap-1 hover:cursor-pointer"
+            >
+              <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
+                <ChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 " />
+              </div>
+              <span className="hover:cursor-pointer">
+                {comments?.length ? comments?.length : "0"}
+              </span>
             </div>
-            <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-green-400 hover:bg-opacity-10 hover:text-green-400">
-              <ArrowPathRoundedSquareIcon className="h-6 w-6 " />
+            <div
+              onClick={() => {
+                retweetComment();
+              }}
+              className="flex items-center justify-center gap-1 hover:cursor-pointer"
+            >
+              <div
+                className={`flex items-center justify-center ${
+                  tweetData?.retweets?.includes(user.uid)
+                    ? "text-green-400"
+                    : "text-neutral-500"
+                } rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-green-400 hover:bg-opacity-10 hover:text-green-400`}
+              >
+                <ArrowPathRoundedSquareIcon className="h-6 w-6 " />
+              </div>
+              <span className="hover:cursor-pointer">
+                {tweetData?.retweets?.length
+                  ? tweetData?.retweets?.length
+                  : "0"}
+              </span>
             </div>
 
-            <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-pink-600 hover:bg-opacity-10 hover:text-pink-600">
-              <HeartIcon className="h-6 w-6 " />
+            <div
+              onClick={() => {
+                likeComment();
+              }}
+              className="flex items-center justify-center gap-1 hover:cursor-pointer"
+            >
+              <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-pink-600 hover:bg-opacity-10 hover:text-pink-600">
+                {tweetData?.likes?.includes(user.uid) ? (
+                  <FilledHeartIcon className="w-5 text-pink-500" />
+                ) : (
+                  <HeartIcon className="h-5 w-5" />
+                )}
+              </div>
+              <span className="hover:cursor-pointer">
+                {tweetData?.likes?.length ? tweetData?.likes?.length : "0"}
+              </span>
             </div>
 
             <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
@@ -115,7 +229,10 @@ export default function CommentsPage() {
         </div>
         {/*  */}
 
-        <div className="flex w-full items-center justify-between border-b border-gray-400 border-opacity-25 p-4">
+        <div
+          onClick={() => replyFunctionShare.current.click()}
+          className="flex w-full items-center justify-between border-b  border-gray-400 border-opacity-25 p-4 hover:cursor-pointer"
+        >
           <div className="flex h-full flex-col items-center justify-start">
             <Image
               src={"/assets/cutzu.gif"}
@@ -126,21 +243,22 @@ export default function CommentsPage() {
               alt=""
             />
           </div>
-          <span className="flex-1 select-none px-4 text-xl text-gray-400 text-opacity-50 hover:cursor-default">
+          <span className="flex-1 select-none px-4 text-gray-400 text-opacity-50 sm:text-xl">
             Tweet your reply
           </span>
-          <button className="rounded-full bg-blue-400 px-4 py-[6px] font-bold opacity-50">
+          <button className="rounded-full bg-blue-400 px-3 py-1 font-bold  sm:px-4 sm:py-[6px]">
             Reply
           </button>
         </div>
         {/*  */}
 
         {comments
-          ? comments.map((fetchedCommentData) => (
+          ? comments.map((fetchedCommentData, index) => (
               <CommentElement
                 commentData={fetchedCommentData}
                 comments={comments}
                 id={id}
+                key={index}
               />
             ))
           : null}
@@ -163,8 +281,6 @@ function CommentElement({ commentData, comments, id }) {
   async function handleCommentDelete(commentDataContent) {
     for (let elem of comments) {
       if (elem.comment === commentDataContent) {
-        console.log("found");
-
         const docRef = doc(db, "posts", id);
 
         await updateDoc(docRef, {

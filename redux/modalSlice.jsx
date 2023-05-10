@@ -12,6 +12,8 @@ const initialState = {
     name: null,
     username: null,
     timestamp: null,
+    image: null,
+    main: null,
   },
 };
 
@@ -50,6 +52,8 @@ const modalSlice = createSlice({
       state.commentTweetDetails.content = action.payload.content;
       state.commentTweetDetails.photoUrl = action.payload.photoUrl;
       state.commentTweetDetails.timestamp = action.payload.timestamp;
+      state.commentTweetDetails.image = action.payload.image;
+      state.commentTweetDetails.main = action.payload.main;
     },
   },
 });

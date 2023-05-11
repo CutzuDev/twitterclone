@@ -57,6 +57,7 @@ function CommentModal() {
         username: user.username,
         name: user.name,
         photoUrl: user.photoUrl,
+        userID: user.uid,
         comment: text,
       };
       await updateDoc(docRef, {
@@ -65,7 +66,9 @@ function CommentModal() {
     }
     setText("");
     dispatch(closeCommentModal());
-    if (!tweetDetails.main) [router.reload()];
+    if (!tweetDetails.main) {
+      router.reload();
+    }
   }
 
   return (
@@ -82,7 +85,7 @@ function CommentModal() {
               onClick={() => dispatch(closeCommentModal())}
             />
           </div>
-          <div className="mt-4 flex w-full">
+          <div className="mt-2 flex w-full sm:mt-4">
             <div className="flex flex-col items-center justify-start">
               <Image
                 src={tweetDetails.photoUrl || "/assets/cutzu.gif"}
@@ -108,15 +111,19 @@ function CommentModal() {
                 </Moment>
               </div>
               <div className="flex w-full flex-col">
-                <span>{tweetDetails.content}</span>
+                <span className="text-sm sm:text-base">
+                  {tweetDetails.content}
+                </span>
                 {tweetDetails.image && (
-                  <img
-                    src={tweetDetails.image}
-                    className="mt-4 max-w-[75%] select-none rounded-2xl"
-                  />
+                  <div className="mt-4 max-w-[75%]">
+                    <img
+                      src={tweetDetails.image}
+                      className="max-h-[125px] select-none rounded-lg sm:max-h-[400px] sm:rounded-2xl"
+                    />
+                  </div>
                 )}
               </div>
-              <div className="my-3 text-gray-400 text-opacity-50">
+              <div className="my-1 text-sm text-gray-400 text-opacity-50 sm:my-3 sm:text-base">
                 Replying to{" "}
                 <span className="text-blue-400 hover:cursor-pointer">
                   @{tweetDetails.name}
@@ -124,7 +131,6 @@ function CommentModal() {
               </div>
             </div>
           </div>
-
 
           <div className="flex w-full flex-col items-start sm:flex-row sm:items-start">
             <div
@@ -144,7 +150,7 @@ function CommentModal() {
             <div className="flex w-full flex-1 flex-col pt-0 sm:p-3">
               <div className="relative mb-2 w-full">
                 <textarea
-                  className=" w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8  font-medium placeholder-gray-400 focus:outline-none sm:text-lg"
+                  className="max-h-[120px] w-full resize-none border-b border-b-gray-400 border-opacity-25 bg-transparent pb-8 font-medium  placeholder-gray-400 focus:outline-none sm:max-w-none sm:text-lg"
                   placeholder="What's happening?"
                   maxLength={100}
                   value={text}

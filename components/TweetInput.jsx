@@ -121,11 +121,11 @@ function TweetInput() {
             </div>
           </div>
           {image && (
-            <div className="relative">
+            <div className="relative mb-4 w-full sm:max-w-[75%]">
               <img
                 src={image}
                 draggable="false"
-                className="mb-4 max-w-[75%] select-none rounded-2xl"
+                className="max-h-[400px] select-none rounded-2xl"
                 alt=""
               />
               <div

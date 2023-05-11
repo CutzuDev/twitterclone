@@ -17,6 +17,8 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   EllipsisHorizontalIcon,
   HeartIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
@@ -35,13 +37,25 @@ import { HeartIcon as FilledHeartIcon } from "@heroicons/react/24/solid";
 
 export default function CommentsPage() {
   const dispatch = useDispatch();
-  const bannerState = useSelector((state) => state.modals.bannerState);
-  const user = useSelector((state) => state.user);
   const router = useRouter();
   const id = router.query.id;
   const [comments, setcomments] = useState([]);
   const [tweetData, settweetData] = useState([]);
-  const replyFunctionShare = useRef(null);
+  const [zoom, setzoom] = useState("400");
+  const [zoomWidth, setzoomWidth] = useState(false);
+  const [zoomIcons, setzoomIcons] = useState({
+    iconPlus: true,
+    iconMinus: false,
+  });
+  const [counterState, setcounterState] = useState(false);
+  const [text, setText] = useState("");
+  const [counter, setCounter] = useState(0);
+  const bannerState = useSelector((state) => state.modals.bannerState);
+  const user = useSelector((state) => state.user);
+
+  const styleIcons =
+    "p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-400 hover:bg-opacity-10";
+  const [replyButton, setreplyButton] = useState(false);
 
   useEffect(() => {
     user.email !== null ? dispatch(hideBanner()) : dispatch(showBanner());
@@ -52,6 +66,32 @@ export default function CommentsPage() {
       fetchData();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (counter !== 0) {
+      setreplyButton(true);
+    } else {
+      setreplyButton(false);
+    }
+  }, [counter]);
+
+  async function sendComment() {
+    if (user.email !== null && text.length !== 0) {
+      const docRef = doc(db, "posts", id);
+      const commentDetails = {
+        username: user.username,
+        userID: user.uid,
+        name: user.name,
+        photoUrl: user.photoUrl,
+        comment: text,
+      };
+      await updateDoc(docRef, {
+        comments: arrayUnion(commentDetails),
+      });
+    }
+    setText("");
+    fetchData();
+  }
 
   async function likeComment() {
     if (!user.email) {
@@ -97,6 +137,26 @@ export default function CommentsPage() {
     setcomments(docData?.comments);
   }
 
+  function zoomImage(state) {
+    state ? setzoom("800") : setzoom("400");
+    state ? setzoomWidth(true) : setzoomWidth(false);
+    state
+      ? setzoomIcons({
+          iconPlus: false,
+          iconMinus: true,
+        })
+      : setzoomIcons({
+          iconPlus: true,
+          iconMinus: false,
+        });
+  }
+
+  function handleChange(event) {
+    setText(event.target.value);
+    setCounter(event.target.value.length);
+  }
+
+  console.log(tweetData);
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
       <div className="sticky top-0 flex items-start justify-end xl:w-full xl:max-w-[350px]">
@@ -142,17 +202,38 @@ export default function CommentsPage() {
         <div className="flex w-full flex-col p-4 pt-0">
           <span className="w-full text-lg">{tweetData?.content}</span>
           {tweetData?.image && (
-            <img
-              src={tweetData?.image}
-              className="mt-4 max-w-[75%] select-none rounded-2xl"
-              alt=""
-            />
+            <div className="relative mt-4 w-full sm:max-w-[75%]">
+              <img
+                src={tweetData?.image}
+                className={`max-h-[${zoom}px] ${
+                  zoomWidth ? "w-full" : "w-auto"
+                } max-w-[100%] select-none rounded-2xl ease-in-out`}
+                alt=""
+                draggable={false}
+                loading="lazy"
+              ></img>
+              <div
+                onClick={() => zoomImage(true)}
+                className={`${
+                  zoomIcons.iconPlus ? "inline" : "hidden"
+                } absolute left-2 top-2 rounded-full bg-black bg-opacity-70 p-2 backdrop-blur-3xl  transition-all duration-300 hover:cursor-pointer hover:bg-opacity-60`}
+              >
+                <MagnifyingGlassPlusIcon className="h-5 w-5" />
+              </div>
+              <div
+                onClick={() => zoomImage(false)}
+                className={`${
+                  zoomIcons.iconMinus ? "inline" : "hidden"
+                } absolute left-2 top-2  rounded-full bg-black bg-opacity-70 p-2 backdrop-blur-3xl transition-all duration-300 hover:cursor-pointer hover:bg-opacity-60`}
+              >
+                <MagnifyingGlassMinusIcon className="h-5 w-5" />
+              </div>
+            </div>
           )}
         </div>
         <div className="flex w-full px-4">
           <div className="flex w-full items-center justify-around border-y border-gray-400 border-opacity-25 px-3 py-1 text-neutral-500 ">
             <div
-              ref={replyFunctionShare}
               onClick={() => {
                 dispatch(
                   setTweetDetails({
@@ -227,13 +308,10 @@ export default function CommentsPage() {
           </div>
         </div>
 
-        <div
-          onClick={() => replyFunctionShare.current.click()}
-          className="flex w-full items-center justify-between border-b  border-gray-400 border-opacity-25 p-4 hover:cursor-pointer"
-        >
-          <div className="flex h-full flex-col items-center justify-start">
+        <div className="flex w-full items-start justify-between border-b  border-gray-400 border-opacity-25 p-4">
+          <div className=" hidden h-full flex-col items-center justify-start sm:flex">
             <Image
-              src={"/assets/cutzu.gif"}
+              src={user.photoUrl || "/assets/cutzu.gif"}
               draggable="false"
               width={46}
               height={46}
@@ -241,10 +319,32 @@ export default function CommentsPage() {
               alt=""
             />
           </div>
-          <span className="flex-1 select-none px-4 text-gray-400 text-opacity-50 sm:text-xl">
-            Tweet your reply
-          </span>
-          <button className="rounded-full bg-blue-400 px-3 py-1 font-bold  sm:px-4 sm:py-[6px]">
+          <div className="relative h-auto flex-1 px-4">
+            <textarea
+              className=" w-full  resize-none overflow-y-hidden bg-transparent align-middle font-medium placeholder-gray-400 outline-none transition-all focus:overflow-y-auto focus:pb-10  focus:outline-none sm:text-lg"
+              placeholder="What's happening?"
+              maxLength={100}
+              value={text}
+              onFocus={() => setcounterState(true)}
+              onBlur={() => setcounterState(false)}
+              onChange={handleChange}
+            ></textarea>
+            <div
+              className={`absolute -right-[58px] bottom-2 w-fit select-none text-center text-neutral-500 text-opacity-75 transition-all placeholder:align-middle sm:-right-[60px] ${
+                counterState ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {counter}/100
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              sendComment();
+            }}
+            className={`mt-1 rounded-full bg-blue-400 px-3 py-1 font-bold sm:px-4 sm:py-[6px] ${
+              replyButton ? "" : "opacity-50 hover:cursor-default"
+            }`}
+          >
             Reply
           </button>
         </div>
@@ -256,6 +356,8 @@ export default function CommentsPage() {
                 comments={comments}
                 id={id}
                 key={index}
+                fetchData={fetchData}
+                tweetData={tweetData}
               />
             ))
           : null}
@@ -270,11 +372,11 @@ export default function CommentsPage() {
   );
 }
 
-function CommentElement({ commentData, comments, id }) {
+function CommentElement({ commentData, comments, id, fetchData, tweetData }) {
   const user = useSelector((state) => state.user);
-  const router = useRouter();
 
   async function handleCommentDelete(commentDataContent) {
+    console.log("ran");
     for (let elem of comments) {
       if (elem.comment === commentDataContent) {
         const docRef = doc(db, "posts", id);
@@ -282,9 +384,8 @@ function CommentElement({ commentData, comments, id }) {
         await updateDoc(docRef, {
           comments: arrayRemove(elem),
         });
-        router.reload();
+        fetchData();
       }
-
       return;
     }
   }
@@ -311,16 +412,20 @@ function CommentElement({ commentData, comments, id }) {
               @{commentData.name}
             </span>
           </div>
-          {process.env.NEXT_PUBLIC_ADMIN_UID === user?.uid ? (
-            <TrashIcon
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCommentDelete(commentData.comment);
-              }}
-              className="absolute -bottom-10 right-0 h-7 w-7 rounded-full border border-red-500 border-opacity-0 p-1 text-gray-400 text-opacity-50 transition-all duration-300 hover:border-opacity-100 hover:stroke-2 hover:text-red-500 hover:text-opacity-100"
-            />
-          ) : null}
-          <EllipsisHorizontalIcon className="h-6 text-gray-400 text-opacity-75" />
+
+          <div className="flex items-center justify-center gap-1">
+            {process.env.NEXT_PUBLIC_ADMIN_UID === user?.uid ||
+            user?.uid === commentData?.userID ||
+            user?.uid === tweetData?.uid ? (
+              <TrashIcon
+                onClick={() => {
+                  handleCommentDelete(commentData.comment);
+                }}
+                className="h-7 w-7 rounded-full border border-red-500 border-opacity-0 p-1 text-gray-400 text-opacity-50 transition-all duration-300 hover:cursor-pointer hover:border-opacity-100 hover:stroke-2 hover:text-red-500 hover:text-opacity-100"
+              />
+            ) : null}
+            <EllipsisHorizontalIcon className="h-6 text-gray-400 text-opacity-75 hover:cursor-not-allowed" />
+          </div>
         </div>
         <div className="flex w-full flex-col gap-2 ">
           <span className="break-all hover:cursor-default">

@@ -54,7 +54,6 @@ export default function Tweet({ data, id }) {
     }
   }
   async function retweetComment() {
-
     if (!user.email) {
       dispatch(openLoginModal());
       return;
@@ -230,11 +229,15 @@ export function TweetHeader({
         <div className="flex w-full flex-col">
           <span className="break-all">{text}</span>
           {image && (
-            <img
-              src={image}
-              className="mt-4 max-w-[75%] select-none rounded-2xl"
-              alt=""
-            />
+            <div className="mt-4 max-w-[75%]">
+              <img
+                src={image}
+                className="max-h-[400px] select-none rounded-2xl object-cover "
+                alt=""
+                draggable={false}
+                loading="lazy"
+              />
+            </div>
           )}
         </div>
       </div>

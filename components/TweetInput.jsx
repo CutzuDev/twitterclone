@@ -68,6 +68,7 @@ function TweetInput() {
         timestamp: serverTimestamp(),
         likes: [],
         retweets: [],
+        bookmarks: [],
         content: text,
       });
       if (image) {

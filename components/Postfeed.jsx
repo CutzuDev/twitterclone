@@ -12,7 +12,6 @@ import { setUser } from "@/redux/userSlice";
 function Postfeed() {
   const selected = "font-bold before:inline text-white";
   const unselected = "before:hidden font-semibold text-neutral-500";
-
   const bannerState = useSelector((state) => state.modals.bannerState);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -50,7 +49,6 @@ function Postfeed() {
     );
     return unsubscribe;
   });
-
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">

@@ -7,13 +7,16 @@ import {
 import {
   ArrowPathRoundedSquareIcon,
   ArrowUpTrayIcon,
-  ChartBarIcon,
+  BookmarkIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   HeartIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-import { HeartIcon as FilledHeartIcon } from "@heroicons/react/24/solid";
+import {
+  HeartIcon as FilledHeartIcon,
+  BookmarkIcon as FilledBookmarkIcon,
+} from "@heroicons/react/24/solid";
 import {
   arrayRemove,
   arrayUnion,
@@ -23,19 +26,24 @@ import {
 } from "firebase/firestore";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Moment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Tweet({ data, id }) {
-  const handleIconClick = (event) => {
-    event.stopPropagation();
-  };
+  const [copyAnimation, setcopyAnimation] = useState(false);
 
   const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
   const router = useRouter();
+
+  const [pageURL, setpageURL] = useState("");
+  useEffect(() => {
+    const currentpageURL = window.location.href;
+    setpageURL(`${currentpageURL}tweet/${id}`);
+  }, []);
 
   async function likeComment() {
     if (!user.email) {
@@ -69,6 +77,22 @@ export default function Tweet({ data, id }) {
       });
     }
   }
+  async function bookmarkComment() {
+    if (!user.email) {
+      dispatch(openLoginModal());
+      return;
+    }
+
+    if (data.bookmarks.includes(user.uid)) {
+      await updateDoc(doc(db, "posts", id), {
+        bookmarks: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(doc(db, "posts", id), {
+        bookmarks: arrayUnion(user.uid),
+      });
+    }
+  }
   return (
     <div
       onClick={() => router.push("/tweet/" + id)}
@@ -85,38 +109,40 @@ export default function Tweet({ data, id }) {
         tweetId={id}
       />
       <div className="flex gap-5 p-3 text-neutral-500 sm:gap-6 sm:pl-[74px] md:gap-8 xl:gap-10">
-        <div className="flex items-center justify-center gap-1">
-          <div
-            onClick={(event) => {
-              event.stopPropagation();
-              dispatch(
-                setTweetDetails({
-                  id: id,
-                  content: data?.content,
-                  photoUrl: data?.photoUrl,
-                  name: data?.name,
-                  username: data?.username,
-                  timestamp: data?.timestamp?.toDate(),
-                  image: data?.image,
-                  main: true,
-                })
-              );
-              dispatch(openCommentModal());
-            }}
-            className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500"
-          >
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            dispatch(
+              setTweetDetails({
+                id: id,
+                content: data?.content,
+                photoUrl: data?.photoUrl,
+                name: data?.name,
+                username: data?.username,
+                timestamp: data?.timestamp?.toDate(),
+                image: data?.image,
+                main: true,
+              })
+            );
+            dispatch(openCommentModal());
+          }}
+          className="flex items-center justify-center gap-1"
+        >
+          <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
             <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           </div>
-          <span className="hover:cursor-default">
+          <span className="hover:cursor-pointer select-none ">
             {data.comments?.length ? data.comments?.length : "0"}
           </span>
         </div>
-        <div className="flex items-center justify-center gap-1">
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            retweetComment();
+          }}
+          className="flex items-center justify-center gap-1"
+        >
           <div
-            onClick={(event) => {
-              event.stopPropagation();
-              retweetComment();
-            }}
             className={`flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer  ${
               data.retweets.includes(user.uid)
                 ? "text-green-400"
@@ -125,8 +151,47 @@ export default function Tweet({ data, id }) {
           >
             <ArrowPathRoundedSquareIcon className="h-5 w-5" />
           </div>
-          <span className="hover:cursor-default">
+          <span className="hover:cursor-pointer select-none">
             {data.retweets?.length ? data.retweets?.length : "0"}
+          </span>
+        </div>
+
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            likeComment();
+          }}
+          className="flex items-center justify-center gap-1"
+        >
+          <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-pink-600 hover:bg-opacity-10 hover:text-pink-600">
+            {data.likes.includes(user.uid) ? (
+              <FilledHeartIcon className="w-5 text-pink-500" />
+            ) : (
+              <HeartIcon className="h-5 w-5" />
+            )}
+          </div>
+          <span className="hover:cursor-pointer select-none">
+            {data.likes?.length ? data.likes?.length : "0"}
+          </span>
+        </div>
+
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            bookmarkComment();
+          }}
+          className="flex items-center justify-center gap-1"
+        >
+          <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
+            {data.bookmarks.includes(user.uid) ? (
+              <FilledBookmarkIcon className="w-5 text-blue-500" />
+            ) : (
+              <BookmarkIcon className="h-5 w-5" />
+            )}
+          </div>
+          <span className="hover:cursor-pointer select-none">
+            {" "}
+            {data.bookmarks?.length ? data.bookmarks?.length : "0"}
           </span>
         </div>
 
@@ -134,31 +199,17 @@ export default function Tweet({ data, id }) {
           <div
             onClick={(event) => {
               event.stopPropagation();
-              likeComment();
+              navigator.clipboard.writeText(pageURL);
+              setcopyAnimation(true);
+              setTimeout(() => {
+                setcopyAnimation(false);
+              }, 1000);
             }}
-            className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-pink-600 hover:bg-opacity-10 hover:text-pink-600"
+            className={`hover:pointer flex items-center justify-center rounded-full ${
+              copyAnimation ? "animate-ping" : ""
+            } p-2 transition-all duration-200 hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500`}
           >
-            {data.likes.includes(user.uid) ? (
-              <FilledHeartIcon className="w-5 text-pink-500" />
-            ) : (
-              <HeartIcon className="h-5 w-5" />
-            )}
-          </div>
-          <span className="hover:cursor-default">
-            {data.likes?.length ? data.likes?.length : "0"}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-center gap-1">
-          <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-not-allowed hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
-            <ChartBarIcon className="h-5 w-5" onClick={handleIconClick} />
-          </div>
-          <span className="hover:cursor-default">0</span>
-        </div>
-
-        <div className="flex items-center justify-center gap-1">
-          <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-not-allowed hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
-            <ArrowUpTrayIcon className="h-5 w-5" onClick={handleIconClick} />
+            <ArrowUpTrayIcon className="h-5 w-5" />
           </div>
         </div>
       </div>

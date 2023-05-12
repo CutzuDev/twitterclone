@@ -13,6 +13,7 @@ import {
   ArrowPathRoundedSquareIcon,
   ArrowSmallLeftIcon,
   ArrowUpTrayIcon,
+  BookmarkIcon,
   ChartBarIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   EllipsisHorizontalIcon,
@@ -33,7 +34,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HeartIcon as FilledHeartIcon } from "@heroicons/react/24/solid";
+import {
+  HeartIcon as FilledHeartIcon,
+  BookmarkIcon as FilledBookmarkIcon,
+} from "@heroicons/react/24/solid";
 
 export default function CommentsPage() {
   const dispatch = useDispatch();
@@ -50,12 +54,17 @@ export default function CommentsPage() {
   const [counterState, setcounterState] = useState(false);
   const [text, setText] = useState("");
   const [counter, setCounter] = useState(0);
+  const [pageURL, setpageURL] = useState("");
   const bannerState = useSelector((state) => state.modals.bannerState);
   const user = useSelector((state) => state.user);
-
   const styleIcons =
     "p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-400 hover:bg-opacity-10";
   const [replyButton, setreplyButton] = useState(false);
+
+  useEffect(() => {
+    const currentpageURL = window.location.href;
+    setpageURL(currentpageURL);
+  }, []);
 
   useEffect(() => {
     user.email !== null ? dispatch(hideBanner()) : dispatch(showBanner());
@@ -129,6 +138,24 @@ export default function CommentsPage() {
     fetchData();
   }
 
+  async function bookmarkComment() {
+    if (!user.email) {
+      dispatch(openLoginModal());
+      return;
+    }
+
+    if (tweetData?.bookmarks?.includes(user.uid)) {
+      await updateDoc(doc(db, "posts", id), {
+        bookmarks: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(doc(db, "posts", id), {
+        bookmarks: arrayUnion(user.uid),
+      });
+    }
+    fetchData();
+  }
+
   async function fetchData() {
     const docRef = doc(db, "posts", id);
     const docFetch = await getDoc(docRef);
@@ -156,7 +183,6 @@ export default function CommentsPage() {
     setCounter(event.target.value.length);
   }
 
-  console.log(tweetData);
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
       <div className="sticky top-0 flex items-start justify-end xl:w-full xl:max-w-[350px]">
@@ -297,13 +323,33 @@ export default function CommentsPage() {
                 {tweetData?.likes?.length ? tweetData?.likes?.length : "0"}
               </span>
             </div>
-
-            <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
-              <ChartBarIcon className="h-6 w-6 " />
+            <div
+              onClick={() => {
+                bookmarkComment();
+              }}
+              className="flex items-center justify-center gap-1 hover:cursor-pointer"
+            >
+              <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
+                {tweetData?.bookmarks?.includes(user.uid) ? (
+                  <FilledBookmarkIcon className="w-5 text-blue-500" />
+                ) : (
+                  <BookmarkIcon className="h-5 w-5" />
+                )}
+              </div>
+              <span className="hover:cursor-pointer">
+                {tweetData?.bookmarks?.length
+                  ? tweetData?.bookmarks?.length
+                  : "0"}
+              </span>
             </div>
 
-            <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
-              <ArrowUpTrayIcon className="h-6 w-6 " />
+            <div
+              onClick={() => {
+                navigator.clipboard.writeText(pageURL);
+              }}
+              className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500"
+            >
+              <ArrowUpTrayIcon className="h-5 w-5 " />
             </div>
           </div>
         </div>
@@ -376,7 +422,6 @@ function CommentElement({ commentData, comments, id, fetchData, tweetData }) {
   const user = useSelector((state) => state.user);
 
   async function handleCommentDelete(commentDataContent) {
-    console.log("ran");
     for (let elem of comments) {
       if (elem.comment === commentDataContent) {
         const docRef = doc(db, "posts", id);

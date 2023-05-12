@@ -11,8 +11,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import UserSection from "./UserSection";
+import { useDispatch } from "react-redux";
 
 function Sidebar() {
+  const dispatch = useDispatch();
   return (
     <div className="hidden h-screen w-full max-w-[300px] flex-col items-center justify-between px-2 py-1 sm:flex">
       <div className="flex w-full flex-col items-center justify-center gap-4 p-2 xl:pr-8">
@@ -31,15 +33,27 @@ function Sidebar() {
           />
         </Link>
         <nav className="flex w-full flex-col items-center justify-center gap-3 xl:items-start xl:gap-2">
-          <SideBarLink text={"Home"} Icon={HomeIcon} />
-          <SideBarLink text={"Explore"} Icon={HashtagIcon} />
-          <SideBarLink text={"Notifications"} Icon={BellIcon} />
-          <SideBarLink text={"Messages"} Icon={InboxIcon} />
-          <SideBarLink text={"Bookmarks"} Icon={BookmarkIcon} />
-          <SideBarLink text={"Profile"} Icon={UserIcon} />
-          <SideBarLink text={"More"} Icon={EllipsisHorizontalCircleIcon} />
+          <Link href={"/"}>
+            <SideBarLink text={"Home"} Icon={HomeIcon} enabled={true} />
+          </Link>
+          <SideBarLink text={"Explore"} Icon={HashtagIcon} enabled={false} />
+          <SideBarLink text={"Notifications"} Icon={BellIcon} enabled={false} />
+          <SideBarLink text={"Messages"} Icon={InboxIcon} enabled={false} />
+          <Link href={"/bookmarks"}>
+            <SideBarLink
+              text={"Bookmarks"}
+              Icon={BookmarkIcon}
+              enabled={true}
+            />
+          </Link>
+          <SideBarLink text={"Profile"} Icon={UserIcon} enabled={true} />
+          <SideBarLink
+            text={"More"}
+            Icon={EllipsisHorizontalCircleIcon}
+            enabled={false}
+          />
         </nav>
-        <button className="w-fit rounded-full bg-[#1d9bf0] p-3 text-lg font-bold xl:w-full">
+        <button className="w-fit rounded-full bg-[#1d9bf0] p-3 text-lg font-bold hover:cursor-not-allowed xl:w-full">
           <ChatBubbleBottomCenterTextIcon className="h-7 xl:hidden" />
           <span className="hidden xl:inline">Tweet</span>
         </button>
@@ -48,9 +62,13 @@ function Sidebar() {
     </div>
   );
 }
-function SideBarLink({ text, Icon }) {
+function SideBarLink({ text, Icon, enabled }) {
   return (
-    <li className="flex w-fit select-none items-center justify-start gap-4 rounded-full p-2 text-xl transition-all duration-100 hover:cursor-pointer hover:bg-white hover:bg-opacity-10 xl:px-4 xl:py-[10px] xl:pr-6">
+    <li
+      className={`flex w-fit select-none items-center justify-start gap-4 rounded-full p-2 text-xl transition-all duration-100 ${
+        enabled ? " hover:cursor-pointer" : "hover:cursor-not-allowed"
+      } hover:bg-white hover:bg-opacity-10 xl:px-4 xl:py-[10px] xl:pr-6`}
+    >
       <Icon className="h-7" />
       <span className="hidden xl:inline">{text}</span>
     </li>

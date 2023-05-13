@@ -1,4 +1,5 @@
 import BottomBanner from "@/components/BottomBanner";
+import Mobilebar from "@/components/Mobilebar";
 import Postfeed from "@/components/Postfeed";
 import Sidebar from "@/components/Sidebar";
 import Trending from "@/components/Trending";
@@ -26,6 +27,7 @@ export default function Home() {
       </div>
       <CommentModal />
       {bannerState && <BottomBanner />}
+      <Mobilebar/>
     </main>
   );
 }

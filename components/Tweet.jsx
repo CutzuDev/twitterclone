@@ -131,7 +131,7 @@ export default function Tweet({ data, id }) {
           <div className="flex items-center justify-center rounded-full p-2 transition-all duration-200 hover:cursor-pointer hover:bg-blue-500 hover:bg-opacity-10 hover:text-blue-500">
             <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           </div>
-          <span className="hover:cursor-pointer select-none ">
+          <span className="select-none hover:cursor-pointer ">
             {data.comments?.length ? data.comments?.length : "0"}
           </span>
         </div>
@@ -151,7 +151,7 @@ export default function Tweet({ data, id }) {
           >
             <ArrowPathRoundedSquareIcon className="h-5 w-5" />
           </div>
-          <span className="hover:cursor-pointer select-none">
+          <span className="select-none hover:cursor-pointer">
             {data.retweets?.length ? data.retweets?.length : "0"}
           </span>
         </div>
@@ -170,7 +170,7 @@ export default function Tweet({ data, id }) {
               <HeartIcon className="h-5 w-5" />
             )}
           </div>
-          <span className="hover:cursor-pointer select-none">
+          <span className="select-none hover:cursor-pointer">
             {data.likes?.length ? data.likes?.length : "0"}
           </span>
         </div>
@@ -189,7 +189,7 @@ export default function Tweet({ data, id }) {
               <BookmarkIcon className="h-5 w-5" />
             )}
           </div>
-          <span className="hover:cursor-pointer select-none">
+          <span className="select-none hover:cursor-pointer">
             {" "}
             {data.bookmarks?.length ? data.bookmarks?.length : "0"}
           </span>

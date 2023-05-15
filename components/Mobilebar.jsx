@@ -1,9 +1,21 @@
-import { BookmarkIcon } from "@heroicons/react/24/outline";
+import { auth } from "@/firebase";
+import { hideBanner } from "@/redux/modalSlice";
+import { setUser } from "@/redux/userSlice";
+import {
+  ArrowLeftOnRectangleIcon,
+  BookmarkIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function Mobilebar() {
   const [isScrollingUp, setIsScrollingUp] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     let prevScrollPosition = window.pageYOffset;
@@ -16,7 +28,6 @@ function Mobilebar() {
         setIsScrollingUp(false);
       } else if (!scrolledDown) {
         setTimeout(() => {
-          
           setIsScrollingUp(true);
         }, 200);
       }
@@ -31,27 +42,71 @@ function Mobilebar() {
     };
   }, []);
 
+  function handleSignOut() {
+    signOut(auth);
+    unsubscribe();
+    dispatch(hideBanner());
+  }
+
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) return;
+    dispatch(
+      setUser({
+        username: null,
+        name: null,
+        email: null,
+        uid: null,
+        photoUrl: null,
+      })
+    );
+    return unsubscribe;
+  });
+
   const bannerState = useSelector((state) => state.modals.bannerState);
   if (!bannerState) {
     return (
-      <ul
-        className={` fixed bottom-0 ${
+      <div
+        className={`fixed bottom-0 sm:hidden ${
           isScrollingUp ? "flex" : "hidden"
         } w-full items-center justify-between border-t border-gray-400 border-opacity-25 bg-black px-8 py-2`}
       >
-        <MobilebarItem Icon={BookmarkIcon} />
-      </ul>
+        <Link href={"/"}>
+          <MobilebarItem Icon={HomeIcon} enabled={true} />
+        </Link>
+        <div
+          onClick={() => {
+            searchstuff();
+          }}
+        >
+          <MobilebarItem Icon={MagnifyingGlassIcon} enabled={false} />
+        </div>
+        <Link href={"/bookmarks"}>
+          <MobilebarItem Icon={BookmarkIcon} enabled={true} />
+        </Link>
+        <div
+          onClick={() => {
+            handleSignOut();
+          }}
+        >
+          <MobilebarItem Icon={ArrowLeftOnRectangleIcon} enabled={true} />
+        </div>
+
+      </div>
     );
   } else {
     return null;
   }
 }
 
-function MobilebarItem({ Icon }) {
+function MobilebarItem({ Icon, enabled }) {
   return (
-    <li className="flex items-center justify-center rounded-full bg-black p-2">
+    <div
+      className={`flex items-center justify-center rounded-full bg-black p-2  ${
+        enabled ? "hover:cursor-pointer" : "hover:cursor-not-allowed"
+      }`}
+    >
       <Icon className="h-6" />
-    </li>
+    </div>
   );
 }
 

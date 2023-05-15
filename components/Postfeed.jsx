@@ -22,12 +22,6 @@ function Postfeed() {
     button2: unselected,
   });
 
-  function handleSignOut() {
-    signOut(auth);
-    unsubscribe();
-    dispatch(hideBanner());
-  }
-
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -36,36 +30,11 @@ function Postfeed() {
     return unsubscribe;
   }, []);
 
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) return;
-    dispatch(
-      setUser({
-        username: null,
-        name: null,
-        email: null,
-        uid: null,
-        photoUrl: null,
-      })
-    );
-    return unsubscribe;
-  });
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-start sm:border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">
+    <div className="sm:max-w-[600px] flex min-h-screen w-full flex-col items-center justify-start border-gray-400 border-opacity-25 sm:border-x">
       <div className="flex w-full flex-col">
-        <div className="flex items-center justify-between p-3">
-          <span className="select-none text-xl font-bold">Home</span>
-          {!bannerState && (
-            <div
-              onClick={() => {
-                handleSignOut();
-              }}
-              className="rounded-full border border-neutral-500 border-opacity-0 p-[6px] text-neutral-200 transition-all duration-300 hover:border-red-500 hover:border-opacity-100 hover:text-red-500 sm:hidden"
-            >
-              <ArrowLeftOnRectangleIcon className="h-6 w-6" />
-            </div>
-          )}
-        </div>
+        <span className="select-none p-3 text-xl font-bold">Home</span>
         <div className="flex justify-between">
           <button
             onClick={() => {
@@ -85,7 +54,7 @@ function Postfeed() {
                 button2: selected,
               });
             }}
-            className={`${styling.button2} relative w-1/2 p-3 transition-all duration-200 before:absolute before:bottom-0 before:h-1 before:w-[4.5rem] before:rounded-full before:bg-blue-400 hover:bg-white hover:bg-opacity-10`}
+            className={`${styling.button2} before:w-[4.5rem] relative w-1/2 p-3 transition-all duration-200 before:absolute before:bottom-0 before:h-1 before:rounded-full before:bg-blue-400 hover:bg-white hover:bg-opacity-10`}
           >
             Following
           </button>

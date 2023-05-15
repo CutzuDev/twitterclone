@@ -1,4 +1,5 @@
 import BottomBanner from "@/components/BottomBanner";
+import Mobilebar from "@/components/Mobilebar";
 import Sidebar from "@/components/Sidebar";
 import Trending from "@/components/Trending";
 import Tweet from "@/components/Tweet";
@@ -10,7 +11,7 @@ import {
   onSnapshot,
   orderBy,
   query,
-  where,
+
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -55,6 +56,7 @@ function bookmarks() {
       </div>
       <CommentModal />
       {bannerState && <BottomBanner />}
+      {!bannerState && <Mobilebar />}
     </main>
   );
 }

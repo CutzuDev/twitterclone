@@ -6,6 +6,7 @@ import { db } from "@/firebase";
 import {
   hideBanner,
   openCommentModal,
+  openLoginModal,
   setTweetDetails,
   showBanner,
 } from "@/redux/modalSlice";
@@ -38,6 +39,7 @@ import {
   HeartIcon as FilledHeartIcon,
   BookmarkIcon as FilledBookmarkIcon,
 } from "@heroicons/react/24/solid";
+import Mobilebar from "@/components/Mobilebar";
 
 export default function CommentsPage() {
   const dispatch = useDispatch();
@@ -184,16 +186,16 @@ export default function CommentsPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
-      <div className="sticky top-0 flex items-start justify-end xl:w-full xl:max-w-[350px]">
+    <main className="xl:max-w-[1400px] mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8]">
+      <div className="xl:max-w-[350px] sticky top-0 flex items-start justify-end xl:w-full">
         <Sidebar />
       </div>
 
-      <div className="flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">
+      <div className="sm:max-w-[600px] flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25">
         <div className="flex w-full items-center justify-start gap-6 p-2 hover:cursor-pointer">
           <Link
             href="/"
-            className="flex items-center justify-center rounded-full p-2 transition-all duration-100 hover:cursor-pointer hover:bg-gray-400 hover:bg-opacity-[15%]"
+            className="hover:bg-opacity-[15%] flex items-center justify-center rounded-full p-2 transition-all duration-100 hover:cursor-pointer hover:bg-gray-400"
           >
             <ArrowSmallLeftIcon className="h-5 stroke-2" />
           </Link>
@@ -228,7 +230,7 @@ export default function CommentsPage() {
         <div className="flex w-full flex-col p-4 pt-0">
           <span className="w-full text-lg">{tweetData?.content}</span>
           {tweetData?.image && (
-            <div className="relative mt-4 w-full sm:max-w-[75%]">
+            <div className="sm:max-w-[75%] relative mt-4 w-full">
               <img
                 src={tweetData?.image}
                 className={`max-h-[${zoom}px] ${
@@ -376,7 +378,7 @@ export default function CommentsPage() {
               onChange={handleChange}
             ></textarea>
             <div
-              className={`absolute -right-[58px] bottom-2 w-fit select-none text-center text-neutral-500 text-opacity-75 transition-all placeholder:align-middle sm:-right-[60px] ${
+              className={`sm:-right-[60px] absolute -right-[58px] bottom-2 w-fit select-none text-center text-neutral-500 text-opacity-75 transition-all placeholder:align-middle ${
                 counterState ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -387,7 +389,7 @@ export default function CommentsPage() {
             onClick={() => {
               sendComment();
             }}
-            className={`mt-1 rounded-full bg-blue-400 px-3 py-1 font-bold sm:px-4 sm:py-[6px] ${
+            className={`sm:py-[6px] mt-1 rounded-full bg-blue-400 px-3 py-1 font-bold sm:px-4 ${
               replyButton ? "" : "opacity-50 hover:cursor-default"
             }`}
           >
@@ -414,6 +416,7 @@ export default function CommentsPage() {
       </div>
       <CommentModal />
       {bannerState && <BottomBanner />}
+      {!bannerState && <Mobilebar />}
     </main>
   );
 }

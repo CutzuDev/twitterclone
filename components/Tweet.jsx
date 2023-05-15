@@ -39,11 +39,7 @@ export default function Tweet({ data, id }) {
 
   const router = useRouter();
 
-  const [pageURL, setpageURL] = useState("");
-  useEffect(() => {
-    const currentpageURL = window.location.href;
-    setpageURL(`${currentpageURL}tweet/${id}`);
-  }, []);
+
 
   async function likeComment() {
     if (!user.email) {
@@ -199,7 +195,7 @@ export default function Tweet({ data, id }) {
           <div
             onClick={(event) => {
               event.stopPropagation();
-              navigator.clipboard.writeText(pageURL);
+              navigator.clipboard.writeText();
               setcopyAnimation(true);
               setTimeout(() => {
                 setcopyAnimation(false);

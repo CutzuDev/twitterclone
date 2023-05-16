@@ -38,8 +38,9 @@ export default function Tweet({ data, id }) {
   const dispatch = useDispatch();
 
   const router = useRouter();
-
-
+  const domain = window.location.host;
+  const protocol = window.location.protocol;
+  const tweetURL = `${protocol}//${domain}/tweet/${id}`;
 
   async function likeComment() {
     if (!user.email) {
@@ -104,7 +105,7 @@ export default function Tweet({ data, id }) {
         image={data?.image}
         tweetId={id}
       />
-      <div className="flex gap-5 p-3 text-neutral-500 sm:gap-6 sm:pl-[74px] md:gap-8 xl:gap-10">
+      <div className="flex gap-3 p-3 text-neutral-500 sm:gap-6 sm:pl-[74px] md:gap-8 xl:gap-10">
         <div
           onClick={(event) => {
             event.stopPropagation();
@@ -195,7 +196,7 @@ export default function Tweet({ data, id }) {
           <div
             onClick={(event) => {
               event.stopPropagation();
-              navigator.clipboard.writeText();
+              navigator.clipboard.writeText(tweetURL);
               setcopyAnimation(true);
               setTimeout(() => {
                 setcopyAnimation(false);

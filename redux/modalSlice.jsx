@@ -4,6 +4,7 @@ const initialState = {
   signupModalOpen: false,
   loginModalOpen: false,
   commentModalOpen: false,
+  searchModalOpen: false,
   bannerState: true,
   commentTweetDetails: {
     id: null,
@@ -32,6 +33,12 @@ const modalSlice = createSlice({
     },
     closeLoginModal: (state) => {
       state.loginModalOpen = false;
+    },
+    openSearchModal: (state) => {
+      state.searchModalOpen = true;
+    },
+    closeSearchModal: (state) => {
+      state.searchModalOpen = false;
     },
     showBanner: (state) => {
       state.bannerState = true;
@@ -63,10 +70,12 @@ export const {
   closeSignupModal,
   openLoginModal,
   closeLoginModal,
-  hideBanner,
-  showBanner,
   openCommentModal,
   closeCommentModal,
+  openSearchModal,
+  closeSearchModal,
+  hideBanner,
+  showBanner,
   setTweetDetails,
 } = modalSlice.actions;
 

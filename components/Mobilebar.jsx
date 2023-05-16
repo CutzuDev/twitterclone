@@ -1,5 +1,5 @@
 import { auth } from "@/firebase";
-import { hideBanner } from "@/redux/modalSlice";
+import { hideBanner, openSearchModal } from "@/redux/modalSlice";
 import { setUser } from "@/redux/userSlice";
 import {
   ArrowLeftOnRectangleIcon,
@@ -11,11 +11,13 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import SearchModal from "./modals/SearchModal";
 
 function Mobilebar() {
   const [isScrollingUp, setIsScrollingUp] = useState(true);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const isOpen = useSelector((state) => state.modals.searchModalOpen);
 
   useEffect(() => {
     let prevScrollPosition = window.pageYOffset;
@@ -73,12 +75,15 @@ function Mobilebar() {
         <Link href={"/"}>
           <MobilebarItem Icon={HomeIcon} enabled={true} />
         </Link>
-        <div
-          onClick={() => {
-            searchstuff();
-          }}
-        >
-          <MobilebarItem Icon={MagnifyingGlassIcon} enabled={false} />
+        <div className="relative">
+          <div
+            onClick={() => {
+              dispatch(openSearchModal());
+            }}
+          >
+            <MobilebarItem Icon={MagnifyingGlassIcon} enabled={true} />
+          </div>
+          <SearchModal />
         </div>
         <Link href={"/bookmarks"}>
           <MobilebarItem Icon={BookmarkIcon} enabled={true} />
@@ -90,7 +95,6 @@ function Mobilebar() {
         >
           <MobilebarItem Icon={ArrowLeftOnRectangleIcon} enabled={true} />
         </div>
-
       </div>
     );
   } else {

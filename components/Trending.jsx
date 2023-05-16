@@ -3,8 +3,13 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 function Trending() {
+  const [searchValue, setsearchValue] = useState("");
+  const router = useRouter();
+
   const trendingList = [
     {
       title: "Fun",
@@ -41,6 +46,19 @@ function Trending() {
     },
   ];
 
+  function handleChange(event) {
+    setsearchValue(event.target.value);
+  }
+
+  function handleKeyDown(event) {
+    const keyID = event.keyCode;
+    if (keyID === 13) {
+      console.log("sent", searchValue);
+      setsearchValue("");
+      router.push(`/?search=${searchValue}`);
+    }
+  }
+
   return (
     <div className="hidden min-h-screen flex-col items-center justify-start gap-3 py-3 pl-8 lg:flex lg:w-full lg:max-w-[350px]">
       <div className="focus-within: group flex w-full items-center justify-center gap-2 rounded-full border-blue-400 bg-gray-400 bg-opacity-[24%] px-4 py-2 focus-within:border focus-within:bg-transparent ">
@@ -74,6 +92,10 @@ function Trending() {
           }}
           placeholder="Search Twitter"
           type="text"
+          onChange={handleChange}
+          onKeyUp={handleKeyDown}
+          value={searchValue}
+          maxLength={10}
           className="mb-[2px] w-full bg-transparent outline-none placeholder:text-gray-400 placeholder:text-opacity-50"
         />
       </div>

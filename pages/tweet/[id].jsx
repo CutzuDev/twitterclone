@@ -65,6 +65,7 @@ export default function CommentsPage() {
 
   useEffect(() => {
     const currentpageURL = window.location.href;
+ 
     setpageURL(currentpageURL);
   }, []);
 

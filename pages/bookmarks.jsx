@@ -6,17 +6,11 @@ import Tweet from "@/components/Tweet";
 import CommentModal from "@/components/modals/CommentModal";
 import { auth, db } from "@/firebase";
 import { hideBanner, showBanner } from "@/redux/modalSlice";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-
-} from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-function bookmarks() {
+function BookmarksPage() {
   const dispatch = useDispatch();
   const bannerState = useSelector((state) => state.modals.bannerState);
   const user = useSelector((state) => state.user);
@@ -61,4 +55,4 @@ function bookmarks() {
   );
 }
 
-export default bookmarks;
+export default BookmarksPage;

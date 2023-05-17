@@ -72,7 +72,7 @@ export default function Home() {
           </div>
         </div>
 
-        {search ? <Searchfeed /> : <Postfeed />}
+        {search ? <Searchfeed searchQuery={search} /> : <Postfeed />}
       </div>
       <div className="sticky top-0">
         <Trending />

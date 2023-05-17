@@ -34,7 +34,7 @@ function UserSection() {
       onClick={() => {
         handleSignOut();
       }}
-      className="mb-4 flex w-full items-center justify-start rounded-full p-3 transition-all duration-200 hover:cursor-pointer hover:bg-white hover:bg-opacity-10"
+      className="mb-4 flex items-center justify-start rounded-full p-3 transition-all duration-200 hover:cursor-pointer hover:bg-red-500 hover:bg-opacity-10 hover:shadow-[0px_0px_0px_2px_rgba(0,0,0,0.3)] hover:shadow-red-500 xl:w-full"
     >
       <Image
         src={user.photoUrl || "/assets/cutzu.gif"}
@@ -44,7 +44,7 @@ function UserSection() {
         className="select-none rounded-full"
         alt=""
       />
-      <div className=" hidden flex-1 flex-col px-3 xl:flex">
+      <div className="hidden flex-1 flex-col px-3 xl:flex">
         <span className="ml-[2px] max-w-[100px] truncate font-semibold">
           {user?.username ? user.username : "username"}
         </span>

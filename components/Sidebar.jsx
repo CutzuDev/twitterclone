@@ -46,7 +46,9 @@ function Sidebar() {
               enabled={true}
             />
           </Link>
-          <SideBarLink text={"Profile"} Icon={UserIcon} enabled={true} />
+          <Link href={"/account"}>
+            <SideBarLink text={"Profile"} Icon={UserIcon} enabled={true} />
+          </Link>
           <SideBarLink
             text={"More"}
             Icon={EllipsisHorizontalCircleIcon}

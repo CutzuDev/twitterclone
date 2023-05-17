@@ -6,6 +6,7 @@ import {
   BookmarkIcon,
   HomeIcon,
   MagnifyingGlassIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
@@ -16,17 +17,14 @@ import SearchModal from "./modals/SearchModal";
 function Mobilebar() {
   const [isScrollingUp, setIsScrollingUp] = useState(true);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const isOpen = useSelector((state) => state.modals.searchModalOpen);
 
   useEffect(() => {
     let prevScrollPosition = window.pageYOffset;
-
     const handleScroll = () => {
       const currentScrollPosition = window.pageYOffset;
       const scrolledDown = prevScrollPosition < currentScrollPosition;
 
-      if (scrolledDown && currentScrollPosition > 100) {
+      if (scrolledDown && currentScrollPosition > 50) {
         setIsScrollingUp(false);
       } else if (!scrolledDown) {
         setTimeout(() => {
@@ -70,7 +68,7 @@ function Mobilebar() {
       <div
         className={`fixed bottom-0 sm:hidden ${
           isScrollingUp ? "flex" : "hidden"
-        } w-full items-center justify-between border-t border-gray-400 border-opacity-25 bg-black px-8 py-2`}
+        } w-full items-center justify-between border-t border-gray-400 border-opacity-25 text-white bg-black px-6 py-2`}
       >
         <Link href={"/"}>
           <MobilebarItem Icon={HomeIcon} enabled={true} />
@@ -87,6 +85,9 @@ function Mobilebar() {
         </div>
         <Link href={"/bookmarks"}>
           <MobilebarItem Icon={BookmarkIcon} enabled={true} />
+        </Link>
+        <Link href={"/account"}>
+          <MobilebarItem Icon={UserIcon} enabled={true} />
         </Link>
         <div
           onClick={() => {

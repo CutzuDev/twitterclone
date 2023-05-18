@@ -26,24 +26,43 @@ function SignupModal() {
 
   const router = useRouter();
 
+  const [errorCode, seterrorCode] = useState("");
+  const [errorText, seterrorText] = useState("");
+
+  useEffect(() => {
+    if (errorCode === "auth/email-already-in-use") {
+      seterrorText("Email already in used.");
+    }
+  }, [errorCode]);
+
   async function handleSignUp(event) {
     event.preventDefault();
-    const userCredentials = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
 
-    const updateUser = await updateProfile(auth.currentUser, {
-      displayName: username,
-      photoURL: `/assets/profilePictures/pfp${Math.ceil(
-        Math.random() * 6
-      )}.png`,
-    });
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-    dispatch(closeSignupModal());
-    dispatch(hideBanner());
-    router.reload();
+      const updateUser = await updateProfile(auth.currentUser, {
+        displayName: username,
+        photoURL: `/assets/profilePictures/pfp${Math.ceil(
+          Math.random() * 6
+        )}.png`,
+      });
+
+      dispatch(closeSignupModal());
+      dispatch(hideBanner());
+      router.reload();
+    } catch (error) {
+      seterrorCode(error.code);
+
+      setTimeout(() => {
+        seterrorCode("");
+        seterrorText("");
+      }, 5000);
+    }
   }
 
   useEffect(() => {
@@ -66,7 +85,7 @@ function SignupModal() {
   return (
     <>
       <button
-        className="rounded-full border bg-white px-10 sm:px-14 py-2 text-black"
+        className="rounded-full border bg-white px-10 py-2 text-black sm:px-14"
         onClick={() => dispatch(openSignupModal())}
       >
         Sign Up
@@ -86,7 +105,7 @@ function SignupModal() {
             Sign In as a Guest
           </button>
           <span className="font-bold">or</span>
-          <span className="mb-2 w-full text-left text-2xl sm:text-4xl font-bold">
+          <span className="mb-2 w-full text-left text-2xl font-bold sm:text-4xl">
             Create your account
           </span>
           <form className="flex w-full flex-col gap-7" onSubmit={handleSignUp}>
@@ -112,12 +131,20 @@ function SignupModal() {
               required={true}
               minLength={"6"}
             />
-            <button
-              type="submit"
-              className="mt-8 w-full rounded-md bg-white py-2 text-lg font-bold text-black"
-            >
-              Create an account
-            </button>
+            <div className="relative">
+              <button
+                type="submit"
+                className="mt-8 w-full rounded-md bg-white py-2 text-lg font-bold text-black"
+              >
+                Create an account
+              </button>
+              {errorCode !== "" && (
+                <div className="absolute right-1/2 top-0 flex  w-full translate-x-1/2  items-center justify-center gap-2 text-sm font-semibold text-white">
+                  <span className="text-red-600">error:</span>
+                  <span className="">{errorText}</span>
+                </div>
+              )}
+            </div>
           </form>
         </div>
       </Modal>

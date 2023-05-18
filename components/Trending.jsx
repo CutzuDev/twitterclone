@@ -53,7 +53,6 @@ function Trending() {
   function handleKeyDown(event) {
     const keyID = event.keyCode;
     if (keyID === 13) {
-      console.log("sent", searchValue);
       setsearchValue("");
       router.push(`/?search=${searchValue}`);
     }

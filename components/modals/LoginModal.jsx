@@ -6,7 +6,7 @@ import {
 } from "@/redux/modalSlice";
 import { Modal } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HandleGuest } from "./HandleGuest";
 
@@ -16,6 +16,20 @@ function LoginModal() {
 
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [errorCode, seterrorCode] = useState("");
+  const [errorText, seterrorText] = useState("");
+
+  useEffect(() => {
+    if (errorCode === "auth/user-not-found") {
+      seterrorText("User not found.");
+    }
+    if (errorCode === "auth/wrong-password") {
+      seterrorText("Wrong password.");
+    }
+    if (errorCode === "auth/too-many-requests") {
+      seterrorText("Too many requests");
+    }
+  }, [errorCode]);
 
   async function handleLogin(event) {
     event.preventDefault();
@@ -24,7 +38,12 @@ function LoginModal() {
       dispatch(closeLoginModal());
       dispatch(hideBanner());
     } catch (error) {
-      console.log(error.code);
+      seterrorCode(error.code);
+
+      setTimeout(() => {
+        seterrorCode("");
+        seterrorText("");
+      }, 5000);
     }
   }
   return (
@@ -41,7 +60,7 @@ function LoginModal() {
         onClose={() => dispatch(closeLoginModal())}
         className="flex items-center justify-center"
       >
-        <div className="flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
+        <div className="relative flex w-4/5 flex-col items-center justify-center gap-4 rounded-lg border border-gray-400 border-opacity-25 bg-black p-7 text-white md:w-[575px]">
           <span className="mb-2 w-full text-left text-2xl font-bold sm:text-4xl">
             Sign in to your account
           </span>
@@ -74,6 +93,12 @@ function LoginModal() {
               HandleGuest();
             }}
           >
+            {errorCode !== "" && (
+              <div className="absolute right-1/2 top-1/2 flex w-full translate-x-1/2 translate-y-1/2 items-center justify-center gap-2 text-sm font-semibold text-white">
+                <span className="text-red-600">error:</span>
+                <span className="">{errorText}</span>
+              </div>
+            )}
             Sign In as a Guest
           </button>
         </div>

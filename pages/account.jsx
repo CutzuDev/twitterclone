@@ -22,7 +22,6 @@ function AccountPage() {
     user.email !== null ? setlocalUsername(user.username) : null;
   }, [user]);
 
-  console.log(user);
 
   function handleChange(event) {
     setlocalUsername(event.target.value);

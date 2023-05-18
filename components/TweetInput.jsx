@@ -47,6 +47,13 @@ function TweetInput() {
     event.target.style.height = event.target.scrollHeight + 2 + "px";
   }
 
+  function handleKeyDown(event) {
+    const keyID = event.keyCode;
+    if (keyID === 13) {
+      sendTweet()
+    }
+  }
+
   useEffect(() => {
     if (counter !== 0 || image !== null) {
       settweetButton("");
@@ -116,6 +123,7 @@ function TweetInput() {
               maxLength={300}
               value={text}
               onChange={handleChange}
+              onKeyUp={handleKeyDown}
             ></textarea>
             <div className="absolute bottom-2 right-0 select-none text-neutral-500 text-opacity-75">
               {counter}/300

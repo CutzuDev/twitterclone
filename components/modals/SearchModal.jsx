@@ -17,7 +17,6 @@ function SearchModal() {
   function handleKeyDown(event) {
     const keyID = event.keyCode;
     if (keyID === 13 && searchValue !== "") {
-      console.log("sent", searchValue);
       setsearchValue("");
       router.push(`/?search=${searchValue}`);
       dispatch(closeSearchModal());

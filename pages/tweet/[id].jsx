@@ -65,7 +65,7 @@ export default function CommentsPage() {
 
   useEffect(() => {
     const currentpageURL = window.location.href;
- 
+
     setpageURL(currentpageURL);
   }, []);
 
@@ -86,6 +86,13 @@ export default function CommentsPage() {
       setreplyButton(false);
     }
   }, [counter]);
+
+  function handleKeyDown(event) {
+    const keyID = event.keyCode;
+    if (keyID === 13) {
+      sendComment();
+    }
+  }
 
   async function sendComment() {
     if (user.email !== null && text.length !== 0) {
@@ -187,16 +194,16 @@ export default function CommentsPage() {
   }
 
   return (
-    <main className="xl:max-w-[1400px] mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8]">
-      <div className="xl:max-w-[350px] sticky top-0 flex items-start justify-end xl:w-full">
+    <main className="mx-auto flex min-h-screen w-full max-w-full items-start justify-center bg-black text-[#e7e9e8] xl:max-w-[1400px]">
+      <div className="sticky top-0 flex items-start justify-end xl:w-full xl:max-w-[350px]">
         <Sidebar />
       </div>
 
-      <div className="sm:max-w-[600px] flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25">
+      <div className="flex min-h-screen w-full flex-col items-center justify-start border-x border-gray-400 border-opacity-25 sm:max-w-[600px]">
         <div className="flex w-full items-center justify-start gap-6 p-2 hover:cursor-pointer">
           <Link
             href="/"
-            className="hover:bg-opacity-[15%] flex items-center justify-center rounded-full p-2 transition-all duration-100 hover:cursor-pointer hover:bg-gray-400"
+            className="flex items-center justify-center rounded-full p-2 transition-all duration-100 hover:cursor-pointer hover:bg-gray-400 hover:bg-opacity-[15%]"
           >
             <ArrowSmallLeftIcon className="h-5 stroke-2" />
           </Link>
@@ -231,7 +238,7 @@ export default function CommentsPage() {
         <div className="flex w-full flex-col p-4 pt-0">
           <span className="w-full text-lg">{tweetData?.content}</span>
           {tweetData?.image && (
-            <div className="sm:max-w-[75%] relative mt-4 w-full">
+            <div className="relative mt-4 w-full sm:max-w-[75%]">
               <img
                 src={tweetData?.image}
                 className={`max-h-[${zoom}px] ${
@@ -374,12 +381,13 @@ export default function CommentsPage() {
               placeholder="What's happening?"
               maxLength={100}
               value={text}
+              onKeyUp={handleKeyDown}
               onFocus={() => setcounterState(true)}
               onBlur={() => setcounterState(false)}
               onChange={handleChange}
             ></textarea>
             <div
-              className={`sm:-right-[60px] absolute -right-[58px] bottom-2 w-fit select-none text-center text-neutral-500 text-opacity-75 transition-all placeholder:align-middle ${
+              className={`absolute -right-[58px] bottom-2 w-fit select-none text-center text-neutral-500 text-opacity-75 transition-all placeholder:align-middle sm:-right-[60px] ${
                 counterState ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -390,7 +398,7 @@ export default function CommentsPage() {
             onClick={() => {
               sendComment();
             }}
-            className={`sm:py-[6px] mt-1 rounded-full bg-blue-400 px-3 py-1 font-bold sm:px-4 ${
+            className={`mt-1 rounded-full bg-blue-400 px-3 py-1 font-bold sm:px-4 sm:py-[6px] ${
               replyButton ? "" : "opacity-50 hover:cursor-default"
             }`}
           >

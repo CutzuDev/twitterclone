@@ -26,7 +26,6 @@ export default function Home() {
   });
 
   if (search && queryState) {
-    console.log(search);
     setqueryState(false);
   }
 
